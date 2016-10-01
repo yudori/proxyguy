@@ -1,4 +1,4 @@
-#to be stored;  current profile, list of profiles
+import shelve
 
 
 def save_current_profile():
@@ -10,9 +10,11 @@ def get_current_profile():
 def save_profile():
     pass
 
-def get_profile():
+def get_profile(name):
     pass
 
+def get_profiles():
+    pass
 
 
 

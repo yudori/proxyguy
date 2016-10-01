@@ -2,13 +2,20 @@ import os
 import shelve
 
 
-protocols = ['http', 'https', 'ftp', 'socks']
 
+class Enum(set):
+    def __getattr__(self, item):
+        if item in self:
+            return item
+        raise AttributeError
+
+
+protocols = Enum(['http', 'https', 'ftp', 'socks'])
 
 class Profile:
 
-    def __init__(self, profile_name, address, port, username, password,
-                 allowed_protocols=protocols):
+    def __init__(self, profile_name, address, port, username,
+                 password, allowed_protocols=protocols):
         self._profile_name = profile_name
         self._address = address
         self._port = port

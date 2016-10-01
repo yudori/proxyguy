@@ -33,7 +33,7 @@ setup(
                  'proxyguy'},
     entry_points={
         'console_scripts': [
-            'proxyguy=proxyguy.cli:main'
+            'proxyguy=proxyguy.cli:init'
         ]
     },
     include_package_data=True,
