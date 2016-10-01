@@ -1,13 +1,10 @@
 import click
 import shelve
 
-#create profile
-#activate profile
-#get current profile
-#list profiles
-#delete profile
+import util
 
-db_file = "db_proxyguy"
+
+db_file = "proxyguy_db"
 
 
 @click.group()
@@ -15,7 +12,7 @@ def init():
     pass
 
 
-@click.command()
+@click.command("new")
 @click.option('--profile-name', prompt='Profile Name',
               help='The name of the proxy configuration profile')
 @click.option('--address', prompt='Proxy Address',
@@ -27,7 +24,7 @@ def init():
 @click.option('--password', prompt='Password',
               help='The proxy password')
 @click.option('--activate', type=click.BOOL, default=False, required=False)
-def create_profile(profile_name, address, port, username, password, activate):
+def new_profile(profile_name, address, port, username, password, activate):
     """
     create a network proxy configuration profile
     """
@@ -39,23 +36,21 @@ def create_profile(profile_name, address, port, username, password, activate):
             'username' : username,
             'password' : password
         }
-
-        if activate:
-            activate_profile(profile_name)
+        click.echo("Profile '{}' successfully created".format(profile_name))
     finally:
         store.close()
-    click.echo("-{}-   -{}-   -{}-   -{}-   -{}-".format(profile_name, address, port, username, password))
+
+    if activate:
+        activate_profile(profile_name)
 
 
-@click.command()
-@click.argument('profile-name')
+
 def activate_profile(profile_name):
-    """
-    activate a network proxy configuration profile
-    """
-    store = shelve.open(db_file);
+    store = shelve.open(db_file)
+    util.activate(store[str(profile_name)])
     try:
-        store['active'] = store[str(profile_name)]
+        store['active'] = str(profile_name)
+        click.echo("Profile '{}' successfully activated".format(profile_name))
     except KeyError:
         click.echo("No such profile '{}'".format(str(profile_name)))
     finally:
@@ -63,19 +58,50 @@ def activate_profile(profile_name):
 
 
 @click.command()
+@click.argument('profile-name')
+def activate(profile_name):
+    """
+    activate a network proxy configuration profile
+    """
+    activate_profile(profile_name)
+
+
+@click.command("current")
+def current_profile():
+    """
+    view activated a network proxy configuration profile
+    """
+    store = shelve.open(db_file)
+    try:
+        click.echo(store['active'])
+    except KeyError:
+        click.echo("You have no active profile")
+    finally:
+        store.close()
+
+
+@click.command("list")
 def list_profiles():
     """
     lists all stored proxy profiles
     """
     store = shelve.open(db_file)
     try:
-        for s in store:
-            click.echo(s)
+        [click.echo(s) for s in store if s != "active"]
     finally:
         store.close()
 
 
-init.add_command(create_profile)
-init.add_command(activate_profile)
+def delete_profile(profile_name):
+    pass
+
+
+def restore_default():
+    pass
+
+
+init.add_command(new_profile)
+init.add_command(activate)
 init.add_command(list_profiles)
+init.add_command(current_profile)
 

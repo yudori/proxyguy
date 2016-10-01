@@ -24,6 +24,7 @@ class TestProxyguy(object):
 
     def test_something(self):
         pass
+
     def test_command_line_interface(self):
         runner = CliRunner()
         result = runner.invoke(cli.init)
