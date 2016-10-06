@@ -1,5 +1,3 @@
-import os
-import re
 
 
 protocols = ['http', 'https', 'ftp', 'socks']
@@ -19,7 +17,7 @@ def write(ls=None):
             append_vars(s)
 
         except KeyError:
-            print "An error occured"
+            print "Oops! an error occured!"
 
 
 def append_vars(val):

@@ -4,7 +4,7 @@ import shelve
 import util
 
 
-db_file = "proxyguy_db"
+db_file = "proxyguy.db"
 
 
 @click.group()
@@ -31,10 +31,10 @@ def new_profile(profile_name, address, port, username, password, activate):
     store = shelve.open(db_file)
     try:
         store[str(profile_name)] = {
-            'address' : address,
-            'port' : port,
-            'username' : username,
-            'password' : password
+            'address': address,
+            'port': port,
+            'username': username,
+            'password': password
         }
         click.echo("Profile '{}' successfully created".format(profile_name))
     finally:
@@ -47,10 +47,16 @@ def new_profile(profile_name, address, port, username, password, activate):
 
 def activate_profile(profile_name):
     store = shelve.open(db_file)
-    util.write(store[str(profile_name)])
     try:
-        store['active'] = str(profile_name)
-        click.echo("Profile '{}' successfully activated".format(profile_name))
+        if profile_name == "":
+            util.write(None)
+            click.echo("No proxy mode activated")
+        else:
+            if profile_name is not "active":
+                util.write(store[str(profile_name)])
+                store['active'] = str(profile_name)
+                click.echo("Profile '{}' successfully activated".
+                           format(profile_name))
     except KeyError:
         click.echo("No such profile '{}'".format(str(profile_name)))
     finally:
@@ -58,7 +64,8 @@ def activate_profile(profile_name):
 
 
 @click.command()
-@click.argument('profile-name')
+@click.argument('profile-name',
+                help='The name of the proxy configuration profile')
 def activate(profile_name):
     """
     activate a network proxy configuration profile
@@ -92,16 +99,41 @@ def list_profiles():
         store.close()
 
 
+@click.command("delete")
+@click.argument('profile-name',
+                help='The name of the proxy configuration profile')
 def delete_profile(profile_name):
-    pass
+    """
+    delete specified profile
+    """
+    store = shelve.open(db_file)
+    try:
+        if profile_name is not "active":
+            del store[str(profile_name)]
+            try:
+                if str(store["active"]) == profile_name:
+                    del store["active"]
+            except KeyError:
+                pass
+        click.echo("Profile '{}' successfully deleted".format(str(profile_name)))
+    except KeyError:
+        click.echo("No such profile '{}'".format(str(profile_name)))
+    finally:
+        store.close()
 
 
-def restore_default():
-    pass
+@click.command("no-proxy")
+def no_proxy():
+    """
+    restore environment to no-proxy mode
+    """
+    activate_profile("")
 
 
 init.add_command(new_profile)
 init.add_command(activate)
 init.add_command(list_profiles)
 init.add_command(current_profile)
+init.add_command(delete_profile)
+init.add_command(no_proxy)
 
