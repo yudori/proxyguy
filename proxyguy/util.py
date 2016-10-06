@@ -1,35 +1,55 @@
 import os
-import shelve
+import re
 
 
 protocols = ['http', 'https', 'ftp', 'socks']
+filepath = "/etc/environment"
 
 
-def activate(ls):
+def write(ls=None):
     """
     saves profile setting which includes username, password,
     address, port, profile name and list of protocols
-    :return:
     """
     clear_vars()
-    s = "http://" + ls['username'] + ":" + ls['password'] + \
-        "@" + ls['address'] + ":"+ str(ls['port']) + "/"
+    if ls is not None:
+        try:
+            s = "http://" + ls['username'] + ":" + ls['password'] + \
+                "@" + ls['address'] + ":"+ str(ls['port']) + "/"
+            append_vars(s)
 
+        except KeyError:
+            print "An error occured"
+
+
+def append_vars(val):
+    """
+    append variables and their values to file
+    """
+    f = open(filepath, "a")
     for p in get_vars():
-        print "{} --> {}".format(p, s)
-        os.environ[p] = s
+        line = "{}={}\n".format(p, val)
+        f.write(line)
+        print "{} --> {}".format(p, val)
 
 
 def clear_vars():
     """
     deletes all supported proxy environment variables
-    :return:
     """
     for p in get_vars():
         try:
-            del os.environ[p]
-        except KeyError:
+            f = open(filepath, "r")
+            lines = f.readlines()
+            f.close()
+            f = open(filepath, "w")
+            for line in lines:
+                if p not in line:
+                    f.write(line)
+        except IOError:
             pass
+        finally:
+            f.close()
 
 
 def get_vars():

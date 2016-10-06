@@ -47,7 +47,7 @@ def new_profile(profile_name, address, port, username, password, activate):
 
 def activate_profile(profile_name):
     store = shelve.open(db_file)
-    util.activate(store[str(profile_name)])
+    util.write(store[str(profile_name)])
     try:
         store['active'] = str(profile_name)
         click.echo("Profile '{}' successfully activated".format(profile_name))
