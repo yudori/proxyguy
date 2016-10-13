@@ -50,7 +50,10 @@ def activate_profile(profile_name):
     try:
         if profile_name == "":
             util.write(None)
-            click.echo("No proxy mode activated")
+            try:
+                del store['active']
+            finally:
+                click.echo("No proxy mode activated")
         else:
             if profile_name is not "active":
                 util.write(store[str(profile_name)])
