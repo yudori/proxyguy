@@ -64,8 +64,7 @@ def activate_profile(profile_name):
 
 
 @click.command()
-@click.argument('profile-name',
-                help='The name of the proxy configuration profile')
+@click.argument('profile-name')
 def activate(profile_name):
     """
     activate a network proxy configuration profile
@@ -100,8 +99,7 @@ def list_profiles():
 
 
 @click.command("delete")
-@click.argument('profile-name',
-                help='The name of the proxy configuration profile')
+@click.argument('profile-name')
 def delete_profile(profile_name):
     """
     delete specified profile
