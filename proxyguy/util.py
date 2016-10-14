@@ -1,3 +1,4 @@
+import click
 
 
 protocols = ['http', 'https', 'ftp', 'socks']
@@ -17,7 +18,7 @@ def write(ls=None):
             append_vars(s)
 
         except KeyError:
-            print "Oops! an error occured!"
+            click.echo("Oops! an error occured!")
 
 
 def append_vars(val):
@@ -28,7 +29,7 @@ def append_vars(val):
     for p in get_vars():
         line = "{}={}\n".format(p, val)
         f.write(line)
-        print "{} --> {}".format(p, val)
+        click.echo("{} --> {}".format(p, val))
 
 
 def clear_vars():
