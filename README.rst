@@ -28,7 +28,31 @@ proxyguy helps you manage and switch between different network proxy environment
 Features
 --------
 
-* TODO
+* Create and activate different proxy configuration environments
+
+
+Usage
+--------
+
+To view available commands, simply run: 
+
+``proxyguy``
+
+
+Use the following to create a new proxy configuration:
+
+``proxyguy new``
+
+then fill in required fields.
+
+
+To activate, run:
+
+``proxyguy activate <profile_name>``
+
+where <profile_name> is the name of a created configuration profile
+
+
 
 Credits
 ---------
