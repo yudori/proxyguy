@@ -18,17 +18,21 @@ proxyguy
      :alt: Updates
 
 
-proxyguy helps you manage and switch between different network proxy environments and configurations (or none at all)
+proxyguy helps you manage and switch between different network proxy environments and configurations (or none at all) in your linux computer
 
 
 * Free software: MIT license
 * Documentation: https://proxyguy.readthedocs.io.
 
 
-Features
+Installation
 --------
 
-* Create and activate different proxy configuration environments
+Download/Clone this project to your local system. In the proxyguy directory, run
+
+``pip install .``
+
+NOTE: requires that pip has already been installed you the system.
 
 
 Usage
@@ -52,6 +56,12 @@ To activate, run:
 
 where <profile_name> is the name of a created configuration profile
 
+
+
+Features
+--------
+
+* Create and activate different proxy configuration environments
 
 
 Credits
