@@ -2,7 +2,8 @@ import click
 
 
 protocols = ['http', 'https', 'ftp', 'socks']
-filepath = "/etc/environment"
+env_path = "/etc/environment"
+apt_path = "/etc/apt/apt.conf"
 
 
 def write(ls=None):
@@ -11,37 +12,68 @@ def write(ls=None):
     address, port, profile name and list of protocols
     """
     clear_vars()
+
     if ls is not None:
         try:
-            s = "http://" + ls['username'] + ":" + ls['password'] + \
-                "@" + ls['address'] + ":"+ str(ls['port']) + "/"
-            append_vars(s)
+            append_vars(ls)
 
         except KeyError:
             click.echo("Oops! an error occured!")
 
 
-def append_vars(val):
+def append_vars(ls):
     """
     append variables and their values to file
     """
-    f = open(filepath, "a")
+
+    url_snip = ls['username'] + ":" + ls['password'] + \
+        "@" + ls['address'] + ":"+ str(ls['port']) + "/"
+
+    #for environment variables
+    val = "http://" + url_snip
+    f = open(env_path, "a")
     for p in get_vars():
         line = "{}={}\n".format(p, val)
         f.write(line)
-        click.echo("{} --> {}".format(p, val))
+        click.echo("({}) {} --> {}".format(env_path, p, val))
+    f.close()
+
+    #for apt variables
+    f = open(apt_path, "a")
+    for p in protocols:
+        line = "Acquire::{}::proxy \"{}://{}\";\n".format(p, p, url_snip)
+        f.write(line)
+        click.echo("({}) --> {}".format(apt_path, line))
+    f.close()
 
 
 def clear_vars():
     """
     deletes all supported proxy environment variables
     """
+
+    #clear environment variables
     for p in get_vars():
         try:
-            f = open(filepath, "r")
+            f = open(env_path, "r")
             lines = f.readlines()
             f.close()
-            f = open(filepath, "w")
+            f = open(env_path, "w")
+            for line in lines:
+                if p not in line:
+                    f.write(line)
+        except IOError:
+            pass
+        finally:
+            f.close()
+
+    #clear apt variables
+    for p in protocols:
+        try:
+            f = open(apt_path, "r")
+            lines = f.readlines()
+            f.close()
+            f = open(apt_path, "w")
             for line in lines:
                 if p not in line:
                     f.write(line)
