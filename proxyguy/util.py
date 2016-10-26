@@ -31,20 +31,18 @@ def append_vars(ls):
 
     #for environment variables
     val = "http://" + url_snip
-    f = open(env_path, "a")
-    for p in get_vars():
-        line = "{}={}\n".format(p, val)
-        f.write(line)
-        click.echo("({}) {} --> {}".format(env_path, p, val))
-    f.close()
+    with open(env_path, "a") as f:
+        for p in convert_protocol_to_vars():
+            line = "{}={}\n".format(p, val)
+            f.write(line)
+            click.echo("({}) {} --> {}".format(env_path, p, val))
 
     #for apt variables
-    f = open(apt_path, "a")
-    for p in protocols:
-        line = "Acquire::{}::proxy \"{}://{}\";\n".format(p, p, url_snip)
-        f.write(line)
-        click.echo("({}) --> {}".format(apt_path, line))
-    f.close()
+    with open(apt_path, "a") as f:
+        for p in protocols:
+            line = "Acquire::{}::proxy \"{}://{}\";\n".format(p, p, url_snip)
+            f.write(line)
+            click.echo("({}) --> {}".format(apt_path, line))
 
 
 def clear_vars():
@@ -53,37 +51,31 @@ def clear_vars():
     """
 
     #clear environment variables
-    for p in get_vars():
+    for p in convert_protocol_to_vars():
         try:
-            f = open(env_path, "r")
-            lines = f.readlines()
-            f.close()
-            f = open(env_path, "w")
-            for line in lines:
-                if p not in line:
-                    f.write(line)
+            with open(env_path, "r") as f :
+                lines = f.readlines()
+            with open(env_path, "w") as f :
+                for line in lines:
+                    if p not in line:
+                        f.write(line)
         except IOError:
             pass
-        finally:
-            f.close()
 
     #clear apt variables
     for p in protocols:
         try:
-            f = open(apt_path, "r")
-            lines = f.readlines()
-            f.close()
-            f = open(apt_path, "w")
-            for line in lines:
-                if p not in line:
-                    f.write(line)
+            with open(apt_path, "r") as f :
+                lines = f.readlines()
+            with open(apt_path, "w") as f:
+                for line in lines:
+                    if p not in line:
+                        f.write(line)
         except IOError:
             pass
-        finally:
-            f.close()
 
 
-def get_vars():
+def convert_protocol_to_vars():
     """
     converts a list of protocol names to its environment variable list
     equivalent.
